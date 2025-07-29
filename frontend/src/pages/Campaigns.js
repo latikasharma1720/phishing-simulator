@@ -1,79 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 export default function Campaigns() {
   const [name, setName] = useState("");
   const [emailTemplate, setEmailTemplate] = useState("");
   const [targetEmails, setTargetEmails] = useState("");
-  const [campaigns, setCampaigns] = useState([]);
-
-  const fetchCampaigns = async () => {
-    try {
-      const res = await axios.get("http://127.0.0.1:8080/api/campaigns");
-      setCampaigns(res.data);
-    } catch (err) {
-      console.error("Error fetching campaigns:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8080/api/campaigns", {
+      await axios.post("http://localhost:8080/api/campaigns", {
         name,
         emailTemplate,
-        targetEmails: targetEmails.split(",").map((email) => email.trim()),
+        targetEmails: targetEmails.split(","),
       });
-      alert("Campaign created!");
+      alert("Campaign created successfully!");
       setName("");
       setEmailTemplate("");
       setTargetEmails("");
-      fetchCampaigns();
     } catch (err) {
       console.error("Error creating campaign:", err);
       alert("Failed to create campaign");
     }
   };
 
+  const formStyle = {
+    maxWidth: "500px",
+    margin: "30px auto",
+    padding: "20px",
+    background: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px",
+    marginTop: "8px",
+    marginBottom: "15px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    fontSize: "16px",
+  };
+
+  const labelStyle = {
+    fontWeight: "bold",
+    display: "block",
+    marginBottom: "5px",
+  };
+
+  const buttonStyle = {
+    padding: "12px 20px",
+    background: "#4caf50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "16px",
+    cursor: "pointer",
+    width: "100%",
+  };
+
+  const headingStyle = {
+    textAlign: "center",
+    marginBottom: "20px",
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Create a Campaign</h1>
-      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+    <div style={formStyle}>
+      <h2 style={headingStyle}>Create Phishing Campaign</h2>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label>Campaign Name:</label><br />
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <label style={labelStyle}>Campaign Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={inputStyle}
+            placeholder="Enter a campaign name"
+            required
+          />
         </div>
         <div>
-          <label>Email Template:</label><br />
+          <label style={labelStyle}>Email Template</label>
           <textarea
             value={emailTemplate}
             onChange={(e) => setEmailTemplate(e.target.value)}
+            style={{ ...inputStyle, height: "100px" }}
+            placeholder="Write the phishing email content here"
             required
-          ></textarea>
+          />
         </div>
         <div>
-          <label>Target Emails (comma separated):</label><br />
-          <textarea
+          <label style={labelStyle}>Target Emails (comma separated)</label>
+          <input
+            type="text"
             value={targetEmails}
             onChange={(e) => setTargetEmails(e.target.value)}
+            style={inputStyle}
+            placeholder="user1@example.com, user2@example.com"
             required
-          ></textarea>
+          />
         </div>
-        <button type="submit">Create Campaign</button>
+        <button type="submit" style={buttonStyle}>
+          Create Campaign
+        </button>
       </form>
-
-      <h2>Existing Campaigns</h2>
-      <ul>
-        {campaigns.map((c) => (
-          <li key={c._id}>
-            {c.name} – {c.targetEmails.join(", ")}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
